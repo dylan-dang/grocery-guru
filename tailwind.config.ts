@@ -6,6 +6,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        pacifico: ["'Pacifico'", 'san-serif'],
+        playpen: ["'Playpen Sans'", 'cursive'],
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
     },
