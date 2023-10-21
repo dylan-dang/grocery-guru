@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
+import { sampleSize } from "lodash";
 import { useEffect, useState } from "react";
 
 // import { api } from "~/utils/api";
@@ -78,11 +79,32 @@ const items = [
 ]
 
 export default function Home() {
-  const [item, setItem] = useState('anything');
+  const [target, setTarget] = useState('');
+  const [placeholder, setPlaceholder] = useState('');
   useEffect(() => {
-    items.sort(() => 0.5 - Math.random());
-    setItem(items.slice(0, 3).join(', '));
+    const update = () => {
+      const stuff = sampleSize(items, 3);
+      stuff[2] = 'or ' + stuff[2];
+      setTarget(`${stuff.join(', ')}...`);
+    }
+    update();
+    const interval = setInterval(update, 5000);
+    return () => clearInterval(interval);
   }, []);
+  useEffect(() => {
+    let i = 0;
+    setPlaceholder(target.charAt(0));
+    const typingInterval = setInterval(() => {
+      if (i < target.length) {
+        setPlaceholder(prevText => prevText + target.charAt(i));
+        i++;
+      } else {
+        clearInterval(typingInterval);
+      }
+    }, 50);
+
+    return () => clearInterval(typingInterval);
+  }, [target]);
 
   return (
     <>
@@ -95,7 +117,7 @@ export default function Home() {
             <h1 className="text-6xl font-pacifico">Grocery Guru</h1>
             <h2 className="mt-8 text-xl text-center">Your one stop shop to compare and find cheapest groceries around you!</h2>
             <form className="mt-5 w-[50%]">   
-              <SearchBar placeholder={item}/>
+              <SearchBar placeholder={placeholder}/>
             </form>
       </main>
     </>
