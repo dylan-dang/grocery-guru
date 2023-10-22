@@ -2,7 +2,7 @@
 
 import { URLSearchParams } from 'url';
 import { selectors, chromium } from 'playwright';
-const chrome = require('@sparticuz/chromium-min');
+import chrome from '@sparticuz/chromium-min';
 // const puppeteer = require('puppeteer-core');
 
 export interface Item {
@@ -23,10 +23,10 @@ function parseUrl(base: string, rel: string, params?: ConstructorParameters<type
 
 async function getTargetItem(searchTerm: string): Promise<Item | null> {
     const base = 'https://www.target.com'
-    await selectors.setTestIdAttribute('data-test');
     const executablePath = await chrome.executablePath(
         `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
     );
+    await selectors.setTestIdAttribute('data-test');
     const browser = await chromium.launch({ executablePath })
     const page = await browser.newPage();
     await page.goto(parseUrl(base, '/s', { searchTerm }));
