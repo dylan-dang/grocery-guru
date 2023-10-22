@@ -44,14 +44,14 @@ function parseUrl(base: string, rel: string, params?: ConstructorParameters<type
 
 
 export async function getTargetItem(searchTerm: string) {
-    selectors.setTestIdAttribute('data-test');
-    const browser = await getBrowser();
-    const base = 'https://www.target.com';
-    const page = await browser.newPage();
-    page.setDefaultTimeout(10000);
-    let item: Item | null = null;
-
     try {
+        selectors.setTestIdAttribute('data-test');
+        const browser = await getBrowser();
+        const base = 'https://www.target.com';
+        const page = await browser.newPage();
+        page.setDefaultTimeout(10000);
+        let item: Item | null = null;
+
         await page.goto(parseUrl(base, '/s', { searchTerm }));
         const productCard = page.getByTestId('@web/ProductCard/ProductCardVariantDefault').first();
         const href = await productCard.locator('a').first().getAttribute('href');
@@ -64,21 +64,22 @@ export async function getTargetItem(searchTerm: string) {
             link: href ? parseUrl(base, href) : '',
             source: 'Target',
         };
+        page.close();
     }
-    catch { }
+    catch {
+        return null;
+    }
 
-    page.close();
-    return item;
 }
 
 export async function getWalmartItem(q: string) {
-    const browser = await getBrowser();
-    const base = 'https://www.walmart.com';
-    const page = await browser.newPage();
-    page.setDefaultTimeout(10000);
-    await page.goto(parseUrl(base, '/search', { q }));
-    let item: Item | null = null;
     try {
+        const browser = await getBrowser();
+        const base = 'https://www.walmart.com';
+        const page = await browser.newPage();
+        page.setDefaultTimeout(10000);
+        await page.goto(parseUrl(base, '/search', { q }));
+        let item: Item | null = null;
         const group = page.locator('[role=group]:has(div[data-testid=list-view])').first();
         const href = await group.locator('a').first().getAttribute('href');
         const src = await group.getByRole('img').first().getAttribute('src');
@@ -90,21 +91,22 @@ export async function getWalmartItem(q: string) {
             link: href ? parseUrl(base, href) : '',
             source: 'Walmart',
         };
+        page.close();
+        return item;
     } catch {
+        return null;
     }
 
-    page.close();
-    return item;
 }
 
 export async function getHebItem(q: string) {
-    const browser = await getBrowser();
-    const base = 'https://www.heb.com';
-    const page = await browser.newPage();
-    page.setDefaultTimeout(10000);
-    await page.goto(parseUrl(base, '/search/', { q }));
-    let item: Item | null = null;
     try {
+        const browser = await getBrowser();
+        const base = 'https://www.heb.com';
+        const page = await browser.newPage();
+        page.setDefaultTimeout(10000);
+        await page.goto(parseUrl(base, '/search/', { q }));
+        let item: Item | null = null;
         const productCard = page.locator('[data-qe-id="productCard"]').first();
         const href = await productCard.locator('a').first().getAttribute('href');
         const src = await productCard.locator('picture img').first().getAttribute('src');
@@ -115,8 +117,8 @@ export async function getHebItem(q: string) {
             link: href ? parseUrl(base, href) : '',
             source: 'HEB',
         };
+        page.close();
     } catch {
+        return null;
     }
-    page.close();
-    return item;
 }
