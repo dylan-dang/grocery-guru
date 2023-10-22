@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { isArray, isArrayLike, sample } from 'lodash';
 import { Card, LoadingCard } from './Card';
-import { Item, getHebItem, getTargetItem, getWalmartItem, testTarget } from '../actions/item';
+import { Item, getHebItem, getTargetItem, getWalmartItem } from '../actions/item';
 
 const exampleQueries = [
     'Milk',
