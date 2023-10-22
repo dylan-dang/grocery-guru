@@ -42,18 +42,24 @@ async function getTargetItem(searchTerm: string): Promise<Item | null> {
     const browser = await getBrowser();
     const page = await browser.newPage();
     await page.goto(parseUrl(base, '/s', { searchTerm }));
+    const title = await page.content();
+    page.close();
 
-    const productCardWrapper = page.getByTestId('@web/ProductCard/ProductCardVariantDefault').first();
-    const href = await productCardWrapper.locator('a').first().getAttribute('href');
-    const src = await productCardWrapper.locator('img').first().getAttribute('src');
-    const item: Item = {
-        image: src ? parseUrl(base, src, {}) : '',
-        title: await productCardWrapper.getByTestId('product-title').innerText(),
-        price: await productCardWrapper.getByTestId('current-price').innerText(),
-        link: href ? parseUrl(base, href) : '',
+    // const productCardWrapper = page.getByTestId('@web/ProductCard/ProductCardVariantDefault').first();
+    // const href = await productCardWrapper.locator('a').first().getAttribute('href');
+    // const src = await productCardWrapper.locator('img').first().getAttribute('src');
+    // const item: Item = {
+    //     image: src ? parseUrl(base, src, {}) : '',
+    //     title: await productCardWrapper.getByTestId('product-title').innerText(),
+    //     price: await productCardWrapper.getByTestId('current-price').innerText(),
+    //     link: href ? parseUrl(base, href) : '',
+    // };
+    return {
+        title,
+        link: '',
+        image: '',
+        price: ''
     };
-    await browser.close();
-    return item;
 }
 
 interface BrowserSingleton {
