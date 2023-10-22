@@ -43,7 +43,7 @@ async function getTargetItem(searchTerm: string): Promise<Item | null> {
     const page = await browser.newPage();
     await page.goto(parseUrl(base, '/s', { searchTerm }));
     const title = await page.content();
-    page.close();
+    await page.close();
 
     // const productCardWrapper = page.getByTestId('@web/ProductCard/ProductCardVariantDefault').first();
     // const href = await productCardWrapper.locator('a').first().getAttribute('href');
