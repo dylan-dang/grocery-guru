@@ -1,10 +1,10 @@
 'use client';
 import { sample } from 'lodash';
 import { useEffect, useState } from 'react';
-import { parseEntities } from 'parse-entities';
-import { getTargetData } from './api';
+import { Card } from './Card';
+import { Item, getItem } from '../actions/item';
 
-const items = [
+const exampleQueries = [
     'Milk',
     'Eggs',
     'Bread',
@@ -60,29 +60,31 @@ const items = [
 
 function SearchIcon() {
     return (
-        <svg
-            className='w-4 h-4 text-gray-400'
-            aria-hidden='true'
-            xmlns='http://www.w3.org/2000/svg'
-            fill='none'
-            viewBox='0 0 20 20'
-        >
-            <path
-                stroke='currentColor'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth='2'
-                d='m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z'
-            />
-        </svg>
+        <div className='absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none'>
+            <svg
+                className='w-4 h-4 text-gray-400'
+                aria-hidden='true'
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 20 20'
+            >
+                <path
+                    stroke='currentColor'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth='2'
+                    d='m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z'
+                />
+            </svg>
+        </div>
     );
 }
 
-export function SearchBar() {
+function SearchBar() {
     const [target, setTarget] = useState('');
     const [placeholder, setPlaceholder] = useState('');
     useEffect(() => {
-        const update = () => setTarget(sample(items) as string);
+        const update = () => setTarget(sample(exampleQueries) as string);
         update();
         const interval = setInterval(update, 5000);
         return () => clearInterval(interval);
@@ -104,14 +106,15 @@ export function SearchBar() {
 
     return (
         <>
-            <label className='mb-2 text-sm font-medium sr-only text-white'>Search</label>
+            <label htmlFor='query' className='mb-2 text-sm font-medium sr-only text-white'>
+                Search
+            </label>
             <div className='relative'>
-                <div className='absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none'>
-                    <SearchIcon />
-                </div>
+                <SearchIcon />
                 <input
                     type='search'
-                    id='item'
+                    id='query'
+                    name='query'
                     className='block w-full p-4 pl-10 text-sm border rounded-lg bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:outline-none'
                     placeholder={placeholder}
                     required
@@ -124,32 +127,6 @@ export function SearchBar() {
                 </button>
             </div>
         </>
-    );
-}
-
-interface CardProps {
-    src: string;
-    href: string;
-    title: string;
-    desc: string;
-}
-
-function Card({ src, href, title, desc }: CardProps) {
-    return (
-        <a
-            href={href}
-            className='mt-10 flex flex-col items-center border rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-700 border-gray-700 bg-gray-800 '
-        >
-            <img
-                className='object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-l-lg'
-                src={src}
-                alt=''
-            />
-            <div className='flex flex-col justify-between p-4 leading-normal'>
-                <h5 className='mb-2 text-2xl font-bold tracking-tight text-white'>{title}</h5>
-                <p className='mb-3 font-normal text-gray-400'>{desc}</p>
-            </div>
-        </a>
     );
 }
 
@@ -177,7 +154,25 @@ function LoadingIcon() {
 }
 
 export function SearchForm() {
-    const [item, setItem] = useState<CardProps | 'loading' | null>(null);
+    const [item, setItem] = useState<Item | 'loading' | null>(null);
+    return (
+        <>
+            <form
+                className='mt-5 px-3 w-full max-w-3xl'
+                action={async (formData) => {
+                    setItem('loading');
+                    setItem(await getItem(formData));
+                }}
+            >
+                <SearchBar />
+            </form>
+            {item && (item == 'loading' ? <LoadingIcon /> : <Card item={item} />)}
+        </>
+    );
+}
+/*
+export function SearchForm() {
+    const [item, setItem] = useState<string | null>(null);
     return (
         <>
             <form
@@ -187,20 +182,22 @@ export function SearchForm() {
                     event.preventDefault();
                     const elem = event.currentTarget.querySelector('#item') as HTMLInputElement;
                     const term = elem.value;
-                    const results = await getTargetData(term);
-                    console.log(results);
-                    const item = results?.search_results?.[0];
-                    if (!item) {
-                        alert('item does not exist');
-                        setItem(null);
-                        return;
-                    }
-                    setItem({
-                        src: item.product.main_image,
-                        href: item.product.link,
-                        title: parseEntities(item.product.title),
-                        desc: `${item.offers.primary.price}`,
-                    });
+                    // const targetData = await getTargetData(term);
+                    // console.log(targetData);
+                    // const item = targetData?.search_results?.[0];
+                    // if (!item) {
+                    //     alert('item does not exist');
+                    //     setItem(null);
+                    //     return;
+                    // }
+                    // setItem({
+                    //     src: item.product.main_image,
+                    //     href: item.product.link,
+                    //     title: parseEntities(item.product.title),
+                    //     desc: `${item.offers.primary.price}`,
+                    // });
+                    const walmartData = await getWalmartData(term);
+                    console.log(walmartData);
                 }}
             >
                 <SearchBar />
@@ -214,3 +211,4 @@ export function SearchForm() {
         </>
     );
 }
+*/

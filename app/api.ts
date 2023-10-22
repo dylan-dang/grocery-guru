@@ -1,7 +1,6 @@
-import dotenv from "dotenv";
 import { config, getJson } from "serpapi";
-dotenv.config();
-config.api_key = process.env.API_KEY ?? null; //your API key from serpapi.com
+
+config.api_key = "28ffbb010d94913459f3d815f6eaa6bf3f2d1b617615f0488b1a3f256b0d1618"; //your API key from serpapi.com
 const resultsLimit = 10; // hardcoded limit for demonstration purpose
 
 export async function getTargetData(term: string) {
@@ -27,25 +26,21 @@ export async function getWalmartData(term: string) {
     sort: "price_low",
   };
 
-  const getResults = async () => {
-    let results: {
-      fixedQuery: any;
-      organicResults: any[];
-    } = {
-      fixedQuery: null,
-      organicResults: [],
-    };
-    while (results.organicResults.length < resultsLimit) {
-      const json = await getJson(engine, params);
-      if (!results.fixedQuery)
-        results.fixedQuery = json.search_information?.spelling_fix;
-      if (json.organic_results) {
-        results.organicResults.push(...json.organic_results);
-        params.page += 1;
-      } else break;
-    }
-    return results;
+  let results: {
+    fixedQuery: any;
+    organicResults: any[];
+  } = {
+    fixedQuery: null,
+    organicResults: [],
   };
-
-  getResults().then((result) => console.dir(result, { depth: null }));
+  while (results.organicResults.length < resultsLimit) {
+    const json = await getJson(engine, params);
+    if (!results.fixedQuery)
+      results.fixedQuery = json.search_information?.spelling_fix;
+    if (json.organic_results) {
+      results.organicResults.push(...json.organic_results);
+      params.page += 1;
+    } else break;
+  }
+  return results;
 }

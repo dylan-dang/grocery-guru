@@ -1,6 +1,4 @@
-import { SearchForm } from './SearchBar';
-
-import 'dotenv/config'
+import { SearchForm } from './components/Search';
 
 export default function Home() {
     return (
