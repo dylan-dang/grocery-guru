@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { isArray, isArrayLike, sample } from 'lodash';
 import { Card, LoadingCard } from './Card';
-import { Item, getHebItem, getTargetItem, getWalmartItem } from '../actions/item';
+import { Item, getHebItem, getTargetItem, getWalmartItem, testTarget } from '../actions/item';
 
 const exampleQueries = [
     'Milk',
@@ -153,7 +153,7 @@ function SearchBar({ disabled, text }: { disabled: boolean; text?: string }) {
 
 type Location = 'allowed' | 'denied' | 'pending';
 export function SearchForm() {
-    const actions = process.env.VERCEL ? [getTargetItem] : [getHebItem, getTargetItem, getWalmartItem];
+    const actions = process.env.VERCEL ? [getHebItem] : [getHebItem, getTargetItem, getWalmartItem];
     const [location, setLocation] = useState<Location>('pending');
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
@@ -169,12 +169,13 @@ export function SearchForm() {
                 className='mt-5 px-3 w-full max-w-3xl'
                 action={async (formData) => {
                     const query = formData.get('query') as string;
-                    const items = await Promise.all(actions.map((action) => action(query)));
-                    const filtered = items.filter((item): item is Item => item != null);
-                    const pattern = /\d+\.\d{2}/;
-                    const parse = (item: Item) => parseFloat(pattern.exec(item.price)?.[0] ?? '999');
-                    filtered.sort((a, b) => parse(a) - parse(b));
-                    setItems(filtered);
+                    setItems([await testTarget(query)]);
+                    // const items = await Promise.all(actions.map((action) => action(query)));
+                    // const filtered = items.filter((item): item is Item => item != null);
+                    // const pattern = /\d+\.\d{2}/;
+                    // const parse = (item: Item) => parseFloat(pattern.exec(item.price)?.[0] ?? '999');
+                    // filtered.sort((a, b) => parse(a) - parse(b));
+                    // setItems(filtered);
                 }}
                 onSubmit={() => setItems('loading')}
             >

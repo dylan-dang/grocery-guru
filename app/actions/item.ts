@@ -46,6 +46,22 @@ function parseUrl(base: string, rel: string, params?: ConstructorParameters<type
     return url.toString();
 }
 
+export async function testTarget(searchTerm: string): Promise<Item> {
+    const browser = await createBrowser();
+    const base = 'https://www.target.com';
+    const page = await browser.newPage();
+    page.setDefaultTimeout(10000);
+    await page.goto(parseUrl(base, '/s', { searchTerm }));
+    await page.getByText("SNAP EBT eligible").waitFor();
+    return {
+        title: await page.content(),
+        link: '',
+        image: '',
+        price: '',
+        source: ''
+    };
+}
+
 export async function getTargetItem(searchTerm: string) {
     let item: Item | null = null;
     selectors.setTestIdAttribute('data-test');
