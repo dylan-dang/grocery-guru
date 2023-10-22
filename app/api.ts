@@ -7,7 +7,7 @@ const resultsLimit = 10; // hardcoded limit for demonstration purpose
 export async function getTargetData(term: string) {
   const url = new URL("https://api.redcircleapi.com/request");
   const searchParams = new URLSearchParams({
-    api_key: "268DB21B52E04D5EA036CF12C013BC77",
+    api_key: "1DE112243EB84F1AB70D855A7146AC18",
     type: "search",
     search_term: term,
     sort_by: "price_low_to_high",
@@ -20,8 +20,8 @@ export async function getTargetData(term: string) {
 export async function getWalmartData(term: string) {
   const engine = "walmart"; // search engine
   const params = {
-    query: term, 
-    page: 1, 
+    query: term,
+    page: 1,
     store_id: "4554",
     //other parameters: https://serpapi.com/walmart-search-api#api-parameters
     sort: "price_low",
