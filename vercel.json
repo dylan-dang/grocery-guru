@@ -1,0 +1,7 @@
+{
+    "functions": {
+      "app/actions/item.ts": {
+        "maxDuration": 300
+      }
+    }
+  }

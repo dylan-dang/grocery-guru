@@ -1,7 +1,7 @@
 'use server';
 
 import { URLSearchParams } from 'url';
-import { selectors, chromium as playwright, Browser } from 'playwright';
+import { chromium as playwright, Browser } from 'playwright';
 import chromium from '@sparticuz/chromium-min';
 
 export interface Item {
