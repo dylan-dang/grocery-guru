@@ -3,7 +3,7 @@
 import { URLSearchParams } from 'url';
 // import { selectors, chromium } from 'playwright';
 const chromium = require('@sparticuz/chromium-min');
-const puppeteer = require('puppeteer-core');
+// const puppeteer = require('puppeteer-core');
 
 export interface Item {
     link: string;
@@ -23,20 +23,23 @@ function parseUrl(base: string, rel: string, params?: ConstructorParameters<type
 
 async function getTargetItem(searchTerm: string): Promise<Item | null> {
     const base = 'https://www.target.com'
-    const browser = await puppeteer.launch({
-        args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
-        defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath(
-            `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
-        ),
-        headless: chromium.headless,
-        ignoreHTTPSErrors: true,
-    });
-    const page = await browser.newPage();
-    await page.goto("https://google.com");
-    const pageTitle = await page.title();
-    console.log(pageTitle);
-    await browser.close();
+    // const browser = await puppeteer.launch({
+    //     args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
+    //     defaultViewport: chromium.defaultViewport,
+    //     executablePath: await chromium.executablePath(
+    //         `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
+    //     ),
+    //     headless: chromium.headless,
+    //     ignoreHTTPSErrors: true,
+    // });
+    // const page = await browser.newPage();
+    // await page.goto("https://google.com");
+    // const pageTitle = await page.title();
+    // console.log(pageTitle);
+    // await browser.close();
+    console.log(await chromium.executablePath(
+        `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
+    ));
     return null;
 
 
