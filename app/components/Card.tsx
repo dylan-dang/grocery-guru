@@ -3,7 +3,7 @@ import { Item } from '../actions/item';
 
 export function LoadingCard() {
     return (
-        <div className='p-10 mt-10 flex flex-col items-center border rounded-lg shadow md:flex-row md:max-w-xl border-gray-700 bg-gray-800'>
+        <div className='mx-5 p-10 mt-10 flex flex-col items-center border rounded-lg shadow md:flex-row md:max-w-xl border-gray-700 bg-gray-800'>
             <svg
                 aria-hidden='true'
                 className='w-8 h-8 animate-spin text-gray-600 fill-green-600'
@@ -28,12 +28,12 @@ export function Card({ item: { image, link, price, title, source } }: { item: It
     return (
         <a
             href={link}
-            className='mt-10 flex flex-col items-center border rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-700 border-gray-700 bg-gray-800 '
+            className='mx-5 mt-10 flex flex-col items-center border rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-700 border-gray-700 bg-gray-800 '
         >
             <img
                 className='object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-l-lg'
                 src={image}
-                alt={title}
+                alt=''
             />
             <div className='flex flex-col justify-between p-4 leading-normal'>
                 <h5 className='mb-1 text-2xl font-bold tracking-tight text-white'>{title}</h5>

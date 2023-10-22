@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { sample } from 'lodash';
 import { Card, LoadingCard } from './Card';
-import { Item, getItem } from '../actions/item';
+import { Item, getHebItem, getTargetItem, getWalmartItem } from '../actions/item';
 
 const exampleQueries = [
     'Milk',
@@ -154,26 +154,35 @@ function SearchBar({ disabled, text }: { disabled: boolean; text?: string }) {
 
 type Location = 'allowed' | 'denied' | 'pending';
 export function SearchForm() {
+    const actions = [getHebItem, getTargetItem, getWalmartItem];
     const [location, setLocation] = useState<Location>('pending');
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             () => setLocation('allowed'),
             () => setLocation('denied'),
-            {
-                maximumAge: Infinity,
-            }
+            { maximumAge: Infinity }
         );
     }, []);
-    const [item, setItem] = useState<Item | 'loading' | null>(null);
+    const itemStates = actions.map(() => useState<Item | 'loading' | null>(null));
     return (
         <>
             <form
                 className='mt-5 px-3 w-full max-w-3xl'
                 action={async (formData) => {
-                    setItem(await getItem(formData));
+                    const query = formData.get('query') as string;
+                    await Promise.all(
+                        actions.map((action, i) =>
+                            action(query).then((item) => {
+                                const [, setItem] = itemStates[i];
+                                setItem(item);
+                            })
+                        )
+                    );
                 }}
                 onSubmit={() => {
-                    setItem('loading');
+                    for (const [, setItem] of itemStates) {
+                        setItem('loading');
+                    }
                 }}
             >
                 <SearchBar
@@ -184,10 +193,10 @@ export function SearchForm() {
                             ? 'Location was denied!'
                             : 'Location data needed!'
                     }
-                    disabled={item == 'loading' || location != 'allowed'}
+                    disabled={location != 'allowed'}
                 />
             </form>
-            {item && (item == 'loading' ? <LoadingCard /> : <Card item={item} />)}
+            {itemStates.map(([item]) => item && (item == 'loading' ? <LoadingCard /> : <Card item={item} />))}
         </>
     );
 }
