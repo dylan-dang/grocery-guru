@@ -11,6 +11,7 @@
   "dependencies": {
     "@playwright/test": "^1.39.0",
     "dotenv": "^16.3.1",
+    "electron": "^27.0.2",
     "graphql-request": "^6.1.0",
     "lodash": "^4.17.21",
     "next": "13.5.6",
