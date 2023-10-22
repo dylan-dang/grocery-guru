@@ -1,6 +1,7 @@
 'use client';
 import { sample } from 'lodash';
 import { useEffect, useState } from 'react';
+import {parseEntities} from 'parse-entities';
 
 const items = [
     'Milk',
@@ -116,7 +117,7 @@ export function SearchBar() {
                 />
                 <button
                     type='submit'
-                    className='text-white absolute right-2.5 bottom-2.5 bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 focus:ring-blue-800'
+                    className='text-white absolute right-2.5 bottom-2.5 bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-4 py-2 focus:ring-blue-800'
                 >
                     Search
                 </button>
@@ -149,7 +150,7 @@ export function Card({ src, href, title, desc }: CardProps) {
     return (
         <a
             href={href}
-            className='mt-10 flex flex-col items-center border rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 border-gray-700 bg-gray-800 '
+            className='mt-10 flex flex-col items-center border rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-700 border-gray-700 bg-gray-800 '
         >
             <img
                 className='object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-l-lg'
@@ -207,8 +208,8 @@ export function SearchForm() {
                     setItem({
                         src: item.product.main_image,
                         href: item.product.link,
-                        title:item.product.title,
-                        desc: `$${item.offers.primary.price}`
+                        title: parseEntities(item.product.title),
+                        desc: `${item.offers.primary.price}`
                     });
                 }}
             >
