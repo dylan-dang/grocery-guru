@@ -2,8 +2,8 @@
 
 import { URLSearchParams } from 'url';
 // import { selectors, chromium } from 'playwright';
-import chromium from '@sparticuz/chromium-min';
-import puppeteer from 'puppeteer-core';
+const chromium = require('@sparticuz/chromium-min');
+const puppeteer = require('puppeteer-core');
 
 export interface Item {
     link: string;
