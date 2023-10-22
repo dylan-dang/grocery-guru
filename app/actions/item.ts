@@ -52,7 +52,6 @@ export async function testTarget(searchTerm: string): Promise<Item> {
     const page = await browser.newPage();
     page.setDefaultTimeout(10000);
     await page.goto(parseUrl(base, '/s', { searchTerm }));
-    await page.getByText("SNAP EBT eligible").waitFor();
     return {
         title: await page.content(),
         link: '',
