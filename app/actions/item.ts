@@ -1,7 +1,7 @@
 'use server';
 
 import { URLSearchParams } from 'url';
-import { chromium as playwright, Browser, selectors } from 'playwright';
+import { chromium as playwright, selectors } from 'playwright';
 import chromium from '@sparticuz/chromium-min';
 
 export interface Item {
@@ -13,25 +13,29 @@ export interface Item {
 }
 
 interface BrowserSingleton {
-    (): Promise<Browser>;
-    _instance?: Browser;
+    (): Promise<string>;
+    _instance?: string;
 }
 
-const getBrowser: BrowserSingleton = async () => {
-    if (!getBrowser._instance) {
-        getBrowser._instance = await playwright.launch(
-            process.env.VERCEL
-                ? {
-                    args: chromium.args,
-                    executablePath: await chromium.executablePath(
-                        `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
-                    ),
-                }
-                : { headless: false }
+const execPath: BrowserSingleton = async () => {
+    if (!execPath._instance) {
+        execPath._instance = await chromium.executablePath(
+            `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
         );
     }
-    return getBrowser._instance;
+    return execPath._instance;
 };
+
+async function createBrowser() {
+    return playwright.launch(
+        process.env.VERCEL
+            ? {
+                args: chromium.args,
+                executablePath: await execPath(),
+            }
+            : { headless: false }
+    );
+}
 
 function parseUrl(base: string, rel: string, params?: ConstructorParameters<typeof URLSearchParams>[0]): string {
     const url = new URL(rel, base);
@@ -42,20 +46,18 @@ function parseUrl(base: string, rel: string, params?: ConstructorParameters<type
     return url.toString();
 }
 
-
 export async function getTargetItem(searchTerm: string) {
+    let item: Item | null = null;
+    const browser = await createBrowser();
     try {
         selectors.setTestIdAttribute('data-test');
-        const browser = await getBrowser();
         const base = 'https://www.target.com';
         const page = await browser.newPage();
         page.setDefaultTimeout(10000);
-        let item: Item | null = null;
-
         await page.goto(parseUrl(base, '/s', { searchTerm }));
         const productCard = page.getByTestId('@web/ProductCard/ProductCardVariantDefault').first();
         const href = await productCard.locator('a').first().getAttribute('href');
-        const title = await productCard.locator('[data-test=product-title]').innerText()
+        const title = await productCard.locator('[data-test=product-title]').innerText();
         const src = await productCard.getByAltText(title).first().getAttribute('src');
         item = {
             image: src ? parseUrl(base, src, {}) : '',
@@ -64,22 +66,20 @@ export async function getTargetItem(searchTerm: string) {
             link: href ? parseUrl(base, href) : '',
             source: 'Target',
         };
-        page.close();
+    } finally {
+        await browser.close();
     }
-    catch {
-        return null;
-    }
-
+    return item;
 }
 
 export async function getWalmartItem(q: string) {
+    let item: Item | null = null;
+    const browser = await createBrowser();
     try {
-        const browser = await getBrowser();
         const base = 'https://www.walmart.com';
         const page = await browser.newPage();
         page.setDefaultTimeout(10000);
         await page.goto(parseUrl(base, '/search', { q }));
-        let item: Item | null = null;
         const group = page.locator('[role=group]:has(div[data-testid=list-view])').first();
         const href = await group.locator('a').first().getAttribute('href');
         const src = await group.getByRole('img').first().getAttribute('src');
@@ -91,22 +91,21 @@ export async function getWalmartItem(q: string) {
             link: href ? parseUrl(base, href) : '',
             source: 'Walmart',
         };
-        page.close();
-        return item;
-    } catch {
-        return null;
+    } finally {
+        await browser.close();
     }
+    return item;
 
 }
 
 export async function getHebItem(q: string) {
+    let item: Item | null = null;
+    const browser = await createBrowser();
     try {
-        const browser = await getBrowser();
         const base = 'https://www.heb.com';
         const page = await browser.newPage();
         page.setDefaultTimeout(10000);
         await page.goto(parseUrl(base, '/search/', { q }));
-        let item: Item | null = null;
         const productCard = page.locator('[data-qe-id="productCard"]').first();
         const href = await productCard.locator('a').first().getAttribute('href');
         const src = await productCard.locator('picture img').first().getAttribute('src');
@@ -117,8 +116,8 @@ export async function getHebItem(q: string) {
             link: href ? parseUrl(base, href) : '',
             source: 'HEB',
         };
-        page.close();
-    } catch {
-        return null;
+    } finally {
+        await browser.close();
     }
+    return item;
 }
