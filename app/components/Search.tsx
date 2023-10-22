@@ -81,7 +81,7 @@ function SearchIcon() {
     );
 }
 
-function SearchBar({ pending }: { pending: boolean }) {
+function SearchBar({ disabled, text }: { disabled: boolean; text?: string }) {
     const [target, setTarget] = useState('');
     const [placeholder, setPlaceholder] = useState('');
 
@@ -98,9 +98,9 @@ function SearchBar({ pending }: { pending: boolean }) {
 
     useEffect(() => {
         const update = () => {
-            const randomPrefix = prefixWords[Math.floor(Math.random() * prefixWords.length)];
+            const randomPrefix = sample(prefixWords);
             const randomQuery = sample(exampleQueries);
-            setTarget(`${randomPrefix} ${randomQuery}`);
+            setTarget(`${randomPrefix} ${randomQuery}...`);
         };
         update();
         const interval = setInterval(update, 5000);
@@ -130,18 +130,18 @@ function SearchBar({ pending }: { pending: boolean }) {
             <div className='relative'>
                 <SearchIcon />
                 <input
-                    disabled={pending}
-                    aria-disabled={pending}
+                    disabled={disabled}
+                    aria-disabled={disabled}
                     type='search'
                     id='query'
                     name='query'
                     className='block w-full p-4 pl-10 text-sm border rounded-lg disabled:text-gray-400 disabled:bg-gray-800 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:outline-none'
-                    placeholder={placeholder}
+                    placeholder={text ?? placeholder}
                     required
                 />
                 <button
-                    disabled={pending}
-                    aria-disabled={pending}
+                    disabled={disabled}
+                    aria-disabled={disabled}
                     type='submit'
                     className='text-white disabled:text-gray-400 absolute right-2.5 bottom-2.5 disabled:bg-green-800 bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-4 py-2 focus:ring-blue-800'
                 >
@@ -152,7 +152,18 @@ function SearchBar({ pending }: { pending: boolean }) {
     );
 }
 
+type Location = 'allowed' | 'denied' | 'pending';
 export function SearchForm() {
+    const [location, setLocation] = useState<Location>('pending');
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(
+            () => setLocation('allowed'),
+            () => setLocation('denied'),
+            {
+                maximumAge: Infinity,
+            }
+        );
+    }, []);
     const [item, setItem] = useState<Item | 'loading' | null>(null);
     return (
         <>
@@ -165,52 +176,18 @@ export function SearchForm() {
                     setItem('loading');
                 }}
             >
-                <SearchBar pending={item == 'loading'} />
+                <SearchBar
+                    text={
+                        location == 'allowed'
+                            ? undefined
+                            : location == 'denied'
+                            ? 'Location was denied!'
+                            : 'Location data needed!'
+                    }
+                    disabled={item == 'loading' || location != 'allowed'}
+                />
             </form>
             {item && (item == 'loading' ? <LoadingCard /> : <Card item={item} />)}
         </>
     );
 }
-
-/*
-export function SearchForm() {
-    const [item, setItem] = useState<string | null>(null);
-    return (
-        <>
-            <form
-                className='mt-5 px-3 w-full max-w-3xl'
-                onSubmit={async (event) => {
-                    setItem('loading');
-                    event.preventDefault();
-                    const elem = event.currentTarget.querySelector('#item') as HTMLInputElement;
-                    const term = elem.value;
-                    // const targetData = await getTargetData(term);
-                    // console.log(targetData);
-                    // const item = targetData?.search_results?.[0];
-                    // if (!item) {
-                    //     alert('item does not exist');
-                    //     setItem(null);
-                    //     return;
-                    // }
-                    // setItem({
-                    //     src: item.product.main_image,
-                    //     href: item.product.link,
-                    //     title: parseEntities(item.product.title),
-                    //     desc: `${item.offers.primary.price}`,
-                    // });
-                    const walmartData = await getWalmartData(term);
-                    console.log(walmartData);
-                }}
-            >
-                <SearchBar />
-            </form>
-            {item &&
-                (item == 'loading' ? (
-                    <LoadingIcon />
-                ) : (
-                    <Card src={item.src} href={item.href} title={item.title} desc={`$${item.desc}`} />
-                ))}
-        </>
-    );
-}
-*/

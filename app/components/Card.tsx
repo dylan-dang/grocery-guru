@@ -24,7 +24,7 @@ export function LoadingCard() {
     );
 }
 
-export function Card({ item: { image, link, price, title } }: { item: Item }) {
+export function Card({ item: { image, link, price, title, source } }: { item: Item }) {
     return (
         <a
             href={link}
@@ -33,10 +33,11 @@ export function Card({ item: { image, link, price, title } }: { item: Item }) {
             <img
                 className='object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-l-lg'
                 src={image}
-                alt=''
+                alt={title}
             />
             <div className='flex flex-col justify-between p-4 leading-normal'>
-                <h5 className='mb-2 text-2xl font-bold tracking-tight text-white'>{title}</h5>
+                <h5 className='mb-1 text-2xl font-bold tracking-tight text-white'>{title}</h5>
+                <p className='mb-1 font-normal text-gray-500'>from {source}</p>
                 <p className='mb-3 font-normal text-gray-400'>{price}</p>
             </div>
         </a>
