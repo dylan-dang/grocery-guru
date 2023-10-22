@@ -1,6 +1,6 @@
 {
     "functions": {
-      "app/**/*.ts": {
+      "app/**/*.tsx": {
         "maxDuration": 300,
         "memory": 3008
       }
