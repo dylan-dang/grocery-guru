@@ -95,7 +95,25 @@ export async function getWalmartItem(q: string) {
         await browser.close();
     }
     return item;
+}
 
+export async function getTargetApiItem(search_term: string): Promise<Item | null> {
+    const req = await fetch(parseUrl('https://api.redcircleapi.com', '/request', {
+        api_key: "BFBEAB2454EA4240ABA7F05D262C69C0",
+        search_term,
+        type: "search",
+        sort_by: "best_match"
+    }));
+    const json = await req.json();
+    const result = json?.search_results?.[0];
+    if (!result) return null;
+    return {
+        title: result.product.title as string,
+        price: `$${result.offers.primary.price}` as string,
+        link: result.product.link as string,
+        image: result.product.main_link as string,
+        source: 'Target'
+    };
 }
 
 export async function getHebItem(q: string) {

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { isArray, isArrayLike, sample } from 'lodash';
 import { Card, LoadingCard } from './Card';
-import { Item, getHebItem, getTargetItem, getWalmartItem } from '../actions/item';
+import { Item, getHebItem, getTargetApiItem, getTargetItem, getWalmartItem } from '../actions/item';
 
 const exampleQueries = [
     'Milk',
@@ -153,7 +153,7 @@ function SearchBar({ disabled, text }: { disabled: boolean; text?: string }) {
 
 type Location = 'allowed' | 'denied' | 'pending';
 export function SearchForm() {
-    const actions = process.env.VERCEL ? [getHebItem] : [getHebItem, getTargetItem, getWalmartItem];
+    const actions = process.env.VERCEL ? [getHebItem, getTargetApiItem] : [getHebItem, getTargetItem, getWalmartItem];
     const [location, setLocation] = useState<Location>('pending');
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
