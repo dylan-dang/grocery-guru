@@ -38,6 +38,7 @@ async function getTargetItem(searchTerm: string): Promise<Item | null> {
 
     const productCardWrapper = page.getByTestId('@web/ProductCard/ProductCardVariantDefault').first();
     const href = await productCardWrapper.locator('a').first().getAttribute('href');
+    console.log("href: " + href);
     const src = await productCardWrapper.locator('img').first().getAttribute('src');
     const item: Item = {
         image: src ? parseUrl(base, src, {}) : '',
