@@ -23,7 +23,7 @@ async function getTargetItem(searchTerm: string): Promise<Item | null> {
     const base = 'https://www.target.com'
 
     await selectors.setTestIdAttribute('data-test')
-    const browser = await chromium.launch({ headless: false });
+    const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
     await page.goto(parseUrl(base, '/s', { searchTerm }));
 
