@@ -50,6 +50,7 @@ export async function getTargetItem(searchTerm: string) {
     const page = await browser.newPage();
     page.setDefaultTimeout(10000);
     let item: Item | null = null;
+
     try {
         await page.goto(parseUrl(base, '/s', { searchTerm }));
         const productCard = page.getByTestId('@web/ProductCard/ProductCardVariantDefault').first();
