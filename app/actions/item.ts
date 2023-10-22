@@ -22,8 +22,8 @@ function parseUrl(base: string, rel: string, params?: ConstructorParameters<type
 async function getTargetItem(searchTerm: string): Promise<Item | null> {
     const base = 'https://www.target.com'
 
-    await selectors.setTestIdAttribute('data-test')
-    const browser = await chromium.launch({ headless: true });
+    await selectors.setTestIdAttribute('data-test');
+    const browser = await chromium.launch({ headless: true, executablePath: process.env.VERCEL && '/vercel/.cache/ms-playwright/chromium-1084' });
     const page = await browser.newPage();
     await page.goto(parseUrl(base, '/s', { searchTerm }));
 
@@ -38,6 +38,7 @@ async function getTargetItem(searchTerm: string): Promise<Item | null> {
     };
     await browser.close();
     return item;
+
 }
 
 export async function getItem(formData: FormData): Promise<Item | null> {
