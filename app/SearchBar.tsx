@@ -127,7 +127,18 @@ export function SearchBar() {
     );
 }
 
-
+async function getTargetData(term: string) {
+    const url = new URL('https://api.redcircleapi.com/request');
+    const searchParams = new URLSearchParams({
+        api_key: '7AEE896443E54182B77E3C2F2B631561',
+        type: 'search',
+        search_term: term,
+        sort_by: 'price_low_to_high',
+    });
+    url.search = searchParams.toString();
+    const req = await fetch(url);
+    return await req.json();
+}
 
 interface CardProps {
     src: string;
@@ -136,7 +147,7 @@ interface CardProps {
     desc: string;
 }
 
-export function Card({ src, href, title, desc }: CardProps) {
+function Card({ src, href, title, desc }: CardProps) {
     return (
         <a
             href={href}
@@ -190,16 +201,18 @@ export function SearchForm() {
                     const elem = event.currentTarget.querySelector('#item') as HTMLInputElement;
                     const term = elem.value;
                     const results = await getTargetData(term);
+                    console.log(results);
                     const item = results?.search_results?.[0];
                     if (!item) {
                         alert('item does not exist');
+                        setItem(null);
                         return;
                     }
                     setItem({
                         src: item.product.main_image,
                         href: item.product.link,
                         title: parseEntities(item.product.title),
-                        desc: `${item.offers.primary.price}`
+                        desc: `${item.offers.primary.price}`,
                     });
                 }}
             >
@@ -209,12 +222,7 @@ export function SearchForm() {
                 (item == 'loading' ? (
                     <LoadingIcon />
                 ) : (
-                    <Card
-                        src={item.src}
-                        href={item.href}
-                        title={item.title}
-                        desc={`$${item.desc}`}
-                    />
+                    <Card src={item.src} href={item.href} title={item.title} desc={`$${item.desc}`} />
                 ))}
         </>
     );
