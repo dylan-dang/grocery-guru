@@ -1,6 +1,6 @@
 'use server';
-import { parseEntities } from 'parse-entities';
-import { selectors, chromium } from 'playwright';
+import { launchChromium } from 'playwright-aws-lambda';
+import { selectors } from 'playwright-core';
 import { URLSearchParams } from 'url';
 
 export interface Item {
@@ -23,7 +23,7 @@ async function getTargetItem(searchTerm: string): Promise<Item | null> {
     const base = 'https://www.target.com'
 
     await selectors.setTestIdAttribute('data-test');
-    const browser = await chromium.launch({ headless: true, executablePath: process.env.VERCEL && '/vercel/.cache/ms-playwright/chromium-1084' });
+    const browser = await launchChromium();
     const page = await browser.newPage();
     await page.goto(parseUrl(base, '/s', { searchTerm }));
 
