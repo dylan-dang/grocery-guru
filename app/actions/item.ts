@@ -21,12 +21,14 @@ function parseUrl(base: string, rel: string, params?: ConstructorParameters<type
     return url.toString();
 }
 
+let executablePath: string | null = null;
+
 async function getTargetItem(searchTerm: string): Promise<Item | null> {
     const base = 'https://www.target.com'
-    const executablePath = await chrome.executablePath(
+    await selectors.setTestIdAttribute('data-test');
+    executablePath = executablePath ?? await chrome.executablePath(
         `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
     );
-    await selectors.setTestIdAttribute('data-test');
     const browser = await chromium.launch({ executablePath })
     const page = await browser.newPage();
     await page.goto(parseUrl(base, '/s', { searchTerm }));
