@@ -1,5 +1,7 @@
 import { SearchForm } from "./SearchBar";
 
+import 'dotenv/config'
+
 export default function Home() {
   return (
     <>
