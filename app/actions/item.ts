@@ -1,8 +1,8 @@
 'use server';
 
 import { URLSearchParams } from 'url';
-// import { selectors, chromium } from 'playwright';
-const chromium = require('@sparticuz/chromium-min');
+import { selectors, chromium } from 'playwright';
+const { executablePath } = require('@sparticuz/chromium-min');
 // const puppeteer = require('puppeteer-core');
 
 export interface Item {
@@ -37,9 +37,12 @@ async function getTargetItem(searchTerm: string): Promise<Item | null> {
     // const pageTitle = await page.title();
     // console.log(pageTitle);
     // await browser.close();
-    console.log(await chromium.executablePath(
-        `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
-    ));
+    const browser = await chromium.launch({
+        executablePath: await executablePath(
+            `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
+        )
+    })
+    browser.close();
     return null;
 
 
