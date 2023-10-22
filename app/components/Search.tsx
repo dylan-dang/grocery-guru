@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { sample } from 'lodash';
+import { isArray, isArrayLike, sample } from 'lodash';
 import { Card, LoadingCard } from './Card';
 import { Item, getHebItem, getTargetItem, getWalmartItem } from '../actions/item';
 
@@ -163,27 +163,21 @@ export function SearchForm() {
             { maximumAge: Infinity }
         );
     }, []);
-    const itemStates = actions.map(() => useState<Item | 'loading' | null>(null));
+    const [items, setItems] = useState<Item[] | 'loading'>([]);
     return (
         <>
             <form
                 className='mt-5 px-3 w-full max-w-3xl'
                 action={async (formData) => {
                     const query = formData.get('query') as string;
-                    await Promise.all(
-                        actions.map((action, i) =>
-                            action(query).then((item) => {
-                                const [, setItem] = itemStates[i];
-                                setItem(item);
-                            })
-                        )
-                    );
+                    const items = await Promise.all(actions.map((action) => action(query)));
+                    const filtered = items.filter((item): item is Item => item != null);
+                    const pattern = /\d+\.\d{2}/;
+                    const parse = (item: Item) => parseFloat(pattern.exec(item.price)?.[0] ?? '999');
+                    filtered.sort((a, b) => parse(a) - parse(b));
+                    setItems(filtered);
                 }}
-                onSubmit={() => {
-                    for (const [, setItem] of itemStates) {
-                        setItem('loading');
-                    }
-                }}
+                onSubmit={() => setItems('loading')}
             >
                 <SearchBar
                     text={
@@ -196,7 +190,7 @@ export function SearchForm() {
                     disabled={location != 'allowed'}
                 />
             </form>
-            {itemStates.map(([item]) => item && (item == 'loading' ? <LoadingCard /> : <Card item={item} />))}
+            {items == 'loading' ? <LoadingCard /> : items.map((item, i) => <Card item={item} hightlight={i == 0} />)}
         </>
     );
 }
