@@ -10,7 +10,7 @@ export default function Home() {
                     <h1 className='text-6xl font-pacifico'>Grocery Guru</h1>
                 </div>
                 <h2 className='mt-8 text-xl text-center'>
-                    Your one stop shop to compare and find cheapest groceries around you!
+                    Your one-stop shop to compare and find the cheapest groceries around you!
                 </h2>
                 <SearchForm />
             </main>
