@@ -134,7 +134,7 @@ interface CardProps {
     desc: string;
 }
 
-export function Card({ src, href, title, desc }: CardProps) {
+function Card({ src, href, title, desc }: CardProps) {
     return (
         <a
             href={href}
