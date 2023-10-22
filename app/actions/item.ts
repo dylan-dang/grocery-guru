@@ -1,8 +1,8 @@
 'use server';
 
 import { URLSearchParams } from 'url';
-import { selectors, chromium } from 'playwright';
-import chrome from '@sparticuz/chromium-min';
+import { selectors, chromium as playwright } from 'playwright';
+import chromium from '@sparticuz/chromium-min';
 // const puppeteer = require('puppeteer-core');
 
 export interface Item {
@@ -26,10 +26,13 @@ let executablePath: string | null = null;
 async function getTargetItem(searchTerm: string): Promise<Item | null> {
     const base = 'https://www.target.com'
     await selectors.setTestIdAttribute('data-test');
-    executablePath = executablePath ?? await chrome.executablePath(
+    executablePath = executablePath ?? await chromium.executablePath(
         `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
     );
-    const browser = await chromium.launch({ executablePath })
+    const browser = await playwright.launch({
+        args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
+        executablePath
+    })
     const page = await browser.newPage();
     await page.goto(parseUrl(base, '/s', { searchTerm }));
 
