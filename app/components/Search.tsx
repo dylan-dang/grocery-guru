@@ -169,13 +169,12 @@ export function SearchForm() {
                 className='mt-5 px-3 w-full max-w-3xl'
                 action={async (formData) => {
                     const query = formData.get('query') as string;
-                    setItems([await testTarget(query)]);
-                    // const items = await Promise.all(actions.map((action) => action(query)));
-                    // const filtered = items.filter((item): item is Item => item != null);
-                    // const pattern = /\d+\.\d{2}/;
-                    // const parse = (item: Item) => parseFloat(pattern.exec(item.price)?.[0] ?? '999');
-                    // filtered.sort((a, b) => parse(a) - parse(b));
-                    // setItems(filtered);
+                    const items = await Promise.all(actions.map((action) => action(query)));
+                    const filtered = items.filter((item): item is Item => item != null);
+                    const pattern = /\d+\.\d{2}/;
+                    const parse = (item: Item) => parseFloat(pattern.exec(item.price)?.[0] ?? '999');
+                    filtered.sort((a, b) => parse(a) - parse(b));
+                    setItems(filtered);
                 }}
                 onSubmit={() => setItems('loading')}
             >
