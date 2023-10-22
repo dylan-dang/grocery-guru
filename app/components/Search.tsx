@@ -1,6 +1,7 @@
 'use client';
-import { sample } from 'lodash';
+
 import { useEffect, useState } from 'react';
+import { sample } from 'lodash';
 import { Card, LoadingCard } from './Card';
 import { Item, getItem } from '../actions/item';
 
@@ -81,11 +82,29 @@ function SearchIcon() {
 }
 
 function SearchBar({ pending }: { pending: boolean }) {
-    const [target, setTarget] = useState(''); // Initialize with an empty string
+    const [target, setTarget] = useState('');
     const [placeholder, setPlaceholder] = useState('');
 
+    const prefixWords = [
+        'Hunt for',
+        'Seek out',
+        'Look for',
+        'Browse for',
+        'Scan for',
+        'Quest for',
+        'Scout for',
+        'Peruse',
+        'Ferret out',
+        'Scavenge for',
+        'Search for',
+    ];
+
     useEffect(() => {
-        const update = () => setTarget('Search for ' + sample(exampleQueries)); // Add "Search for" prefix
+        const update = () => {
+            const randomPrefix = prefixWords[Math.floor(Math.random() * prefixWords.length)];
+            const randomQuery = sample(exampleQueries);
+            setTarget(`${randomPrefix} ${randomQuery}`);
+        };
         update();
         const interval = setInterval(update, 5000);
         return () => clearInterval(interval);
@@ -136,7 +155,6 @@ function SearchBar({ pending }: { pending: boolean }) {
     );
 }
 
-
 export function SearchForm() {
     const [item, setItem] = useState<Item | 'loading' | null>(null);
     return (
@@ -156,6 +174,7 @@ export function SearchForm() {
         </>
     );
 }
+
 /*
 export function SearchForm() {
     const [item, setItem] = useState<string | null>(null);
