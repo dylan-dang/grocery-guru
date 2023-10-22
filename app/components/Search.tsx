@@ -86,16 +86,13 @@ function SearchBar({ pending }: { pending: boolean }) {
     const [placeholder, setPlaceholder] = useState('');
 
     const prefixWords = [
-        'Hunt for',
         'Seek out',
         'Look for',
         'Browse for',
         'Scan for',
-        'Quest for',
         'Scout for',
         'Peruse',
         'Ferret out',
-        'Scavenge for',
         'Search for',
     ];
 
