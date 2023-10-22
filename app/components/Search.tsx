@@ -81,14 +81,16 @@ function SearchIcon() {
 }
 
 function SearchBar({ pending }: { pending: boolean }) {
-    const [target, setTarget] = useState('');
+    const [target, setTarget] = useState(''); // Initialize with an empty string
     const [placeholder, setPlaceholder] = useState('');
+
     useEffect(() => {
-        const update = () => setTarget(sample(exampleQueries) as string);
+        const update = () => setTarget('Search for ' + sample(exampleQueries)); // Add "Search for" prefix
         update();
         const interval = setInterval(update, 5000);
         return () => clearInterval(interval);
     }, []);
+
     useEffect(() => {
         let i = 0;
         setPlaceholder(target.charAt(0));
@@ -133,6 +135,7 @@ function SearchBar({ pending }: { pending: boolean }) {
         </>
     );
 }
+
 
 export function SearchForm() {
     const [item, setItem] = useState<Item | 'loading' | null>(null);
