@@ -48,9 +48,9 @@ function parseUrl(base: string, rel: string, params?: ConstructorParameters<type
 
 export async function getTargetItem(searchTerm: string) {
     let item: Item | null = null;
+    selectors.setTestIdAttribute('data-test');
     const browser = await createBrowser();
     try {
-        selectors.setTestIdAttribute('data-test');
         const base = 'https://www.target.com';
         const page = await browser.newPage();
         page.setDefaultTimeout(10000);

@@ -153,7 +153,7 @@ function SearchBar({ disabled, text }: { disabled: boolean; text?: string }) {
 
 type Location = 'allowed' | 'denied' | 'pending';
 export function SearchForm() {
-    const actions = [getHebItem /* getTargetItem, getWalmartItem*/];
+    const actions = process.env.VERCEL ? [getTargetItem] : [getHebItem, getTargetItem, getWalmartItem];
     const [location, setLocation] = useState<Location>('pending');
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
