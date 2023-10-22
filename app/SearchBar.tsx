@@ -1,5 +1,5 @@
 'use client';
-import { sampleSize } from 'lodash';
+import { sample } from 'lodash';
 import { useEffect, useState } from 'react';
 
 const items = [
@@ -77,15 +77,10 @@ function SearchIcon() {
 }
 
 export function SearchBar() {
-    'use client';
     const [target, setTarget] = useState('');
     const [placeholder, setPlaceholder] = useState('');
     useEffect(() => {
-        const update = () => {
-            const stuff = sampleSize(items, 3);
-            stuff[2] = 'or ' + stuff[2];
-            setTarget(`${stuff.join(', ')}...`);
-        };
+        const update = () => setTarget(sample(items) as string);
         update();
         const interval = setInterval(update, 5000);
         return () => clearInterval(interval);
@@ -197,7 +192,7 @@ export function SearchForm() {
     return (
         <>
             <form
-                className='mt-5 w-[50%]'
+                className='mt-5 px-3 w-full max-w-3xl'
                 onSubmit={async (event) => {
                     setItem('loading');
                     event.preventDefault();
