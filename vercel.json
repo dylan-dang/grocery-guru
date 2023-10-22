@@ -1,7 +1,8 @@
 {
     "functions": {
-      "app/actions/item.ts": {
-        "maxDuration": 300
+      "app/**/*.ts": {
+        "maxDuration": 300,
+        "memory": 3008
       }
     }
   }
