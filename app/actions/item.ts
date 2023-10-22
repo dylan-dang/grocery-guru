@@ -1,7 +1,7 @@
 'use server';
 
 import { URLSearchParams } from 'url';
-import { selectors, chromium as playwright } from 'playwright';
+import { selectors, chromium as playwright, Browser } from 'playwright';
 import chromium from '@sparticuz/chromium-min';
 // const puppeteer = require('puppeteer-core');
 
@@ -10,6 +10,18 @@ export interface Item {
     price: string;
     image: string;
     title: string;
+}
+
+const getBrowser: BrowserSingleton = async () => {
+    if (!getBrowser._instance) {
+        getBrowser._instance = await playwright.launch({
+            args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
+            executablePath: await chromium.executablePath(
+                `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
+            )
+        });
+    }
+    return getBrowser._instance;
 }
 
 function parseUrl(base: string, rel: string, params?: ConstructorParameters<typeof URLSearchParams>[0]): string {
@@ -23,22 +35,16 @@ function parseUrl(base: string, rel: string, params?: ConstructorParameters<type
 
 let executablePath: string | null = null;
 
+
 async function getTargetItem(searchTerm: string): Promise<Item | null> {
     const base = 'https://www.target.com'
     await selectors.setTestIdAttribute('data-test');
-    executablePath = executablePath ?? await chromium.executablePath(
-        `https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar`
-    );
-    const browser = await playwright.launch({
-        args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
-        executablePath
-    })
+    const browser = await getBrowser();
     const page = await browser.newPage();
     await page.goto(parseUrl(base, '/s', { searchTerm }));
 
     const productCardWrapper = page.getByTestId('@web/ProductCard/ProductCardVariantDefault').first();
     const href = await productCardWrapper.locator('a').first().getAttribute('href');
-    console.log("href: " + href);
     const src = await productCardWrapper.locator('img').first().getAttribute('src');
     const item: Item = {
         image: src ? parseUrl(base, src, {}) : '',
@@ -48,6 +54,11 @@ async function getTargetItem(searchTerm: string): Promise<Item | null> {
     };
     await browser.close();
     return item;
+}
+
+interface BrowserSingleton {
+    (): Promise<Browser>;
+    _instance?: Browser;
 }
 
 export async function getItem(formData: FormData): Promise<Item | null> {
