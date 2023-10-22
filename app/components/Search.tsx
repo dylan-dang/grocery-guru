@@ -59,6 +59,17 @@ const exampleQueries = [
     'Honey',
 ];
 
+const prefixWords = [
+    'Seek out',
+    'Look for',
+    'Browse for',
+    'Scan for',
+    'Scout for',
+    'Peruse',
+    'Ferret out',
+    'Search for',
+];
+
 function SearchIcon() {
     return (
         <div className='absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none'>
@@ -84,18 +95,6 @@ function SearchIcon() {
 function SearchBar({ disabled, text }: { disabled: boolean; text?: string }) {
     const [target, setTarget] = useState('');
     const [placeholder, setPlaceholder] = useState('');
-
-    const prefixWords = [
-        'Seek out',
-        'Look for',
-        'Browse for',
-        'Scan for',
-        'Scout for',
-        'Peruse',
-        'Ferret out',
-        'Search for',
-    ];
-
     useEffect(() => {
         const update = () => {
             const randomPrefix = sample(prefixWords);
@@ -190,7 +189,11 @@ export function SearchForm() {
                     disabled={location != 'allowed'}
                 />
             </form>
-            {items == 'loading' ? <LoadingCard /> : items.map((item, i) => <Card item={item} hightlight={i == 0} />)}
+            {items == 'loading' ? (
+                <LoadingCard />
+            ) : (
+                items.map((item, i) => <Card key={i} item={item} hightlight={i == 0} />)
+            )}
         </>
     );
 }
