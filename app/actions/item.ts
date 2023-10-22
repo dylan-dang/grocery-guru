@@ -39,6 +39,7 @@ async function getTargetItem(searchTerm: string): Promise<Item | null> {
     await browser.close();
     return null;
 
+
     // await selectors.setTestIdAttribute('data-test');
     // const executablePath = await chrome.executablePath("https://github.com/Sparticuz/chromium/releases/download/v116.0.0/chromium-v116.0.0-pack.tar");
     // console.log(executablePath);
